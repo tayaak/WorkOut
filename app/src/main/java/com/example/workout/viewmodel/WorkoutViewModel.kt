@@ -87,6 +87,7 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
         _state.value = Workstate.REST
         _currentExercise.value =
             Exercise("Kurz Pause ", "Trink ruhig was, gleich geht es weiter ", R.drawable.pause, 15)
+        startTimer(15)
 
     }
 
@@ -109,28 +110,30 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
     }
 
     private fun startTimer(duration: Int) {
+        println("⏳ Timer wird gestartet mit $duration Sekunden")  // <--- Testausgabe
+
         _timeLeft.value = duration
 
         timer?.cancel()
         timer = object : CountDownTimer(duration * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                _timeLeft.value =
-                    (millisUntilFinished / 1000).toInt() //jede Sekunde wird an UI zum aktualiseren weitergegeben
+                _timeLeft.value = (millisUntilFinished / 1000).toInt()
+                println("⌛ Tick: ${_timeLeft.value}")  // <--- Testausgabe
             }
 
             override fun onFinish() {
+                println("✅ Timer fertig")  // <--- Testausgabe
                 if (_state.value == Workstate.EXERCISE) {
-                    currentIndex++
-                    startExercise() // beim ablaufen der zeit startet die nächste Übung
+                    startReset()
                 } else {
+                    currentIndex++
                     startExercise()
                 }
             }
-
-
-            }
-        }
+        }.start() // ⬅️ WICHTIG: Timer starten!!!
     }
+}
+
 
 
 
