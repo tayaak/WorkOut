@@ -13,15 +13,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.workout.viewmodel.WorkoutViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+
+
 
 
 @Composable
+
 //hier wird durch das viewModel die aktuellen Daten geholt, also :
 fun WorkoutScreen(workoutViewModel: WorkoutViewModel = viewModel()) {
     val exercise by workoutViewModel.currentExercise.observeAsState() //welche Übung
     val timeLeft by workoutViewModel.timeLeft.observeAsState(0) //wie viel zeit
     val progress by workoutViewModel.progress.observeAsState(0)//wie viel Fortschritt
      val totalExercises = 7 // Anzahl der Übungen, am besten aus ViewModel holen, hier vereinfacht
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        workoutViewModel.startExercise(context)
+    }
 
     //hier kommt das UI desing
     Surface(modifier = Modifier.fillMaxSize()) {

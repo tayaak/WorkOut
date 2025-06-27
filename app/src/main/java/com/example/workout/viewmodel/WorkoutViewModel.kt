@@ -1,4 +1,6 @@
 package com.example.workout.viewmodel
+import android.content.Context
+import android.media.MediaPlayer
 import android.os.CountDownTimer
 import android.os.Parcel
 import android.os.Parcelable
@@ -63,19 +65,26 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
         currentIndex = parcel.readInt()
     }
 
-    // init ist ein Startblocker, somit beginnt beim öffnen der App direkt die erste Übung
-    init {
-        startExercise()
+
+    // hier kommt die Musik
+    private var mediaPlayer: MediaPlayer? = null
+
+    private fun playSound(context: Context, resId: Int) {
+        mediaPlayer?.release()
+        mediaPlayer = MediaPlayer.create(context, resId)
+        mediaPlayer?.start()
     }
 
+
     // if- else Bedingung- wenn wir noch nicht bei der letzten Übung sind kommt die nächst, sonst ist man fertig
-    private fun startExercise() {
+    fun startExercise(context:Context) {
         if (currentIndex < exercises.size) { //größer als anzahl der exercises
             val exercise = exercises[currentIndex]
             _currentExercise.value = exercise
             _progress.value = currentIndex
             _state.value = Workstate.EXERCISE
-            startTimer(exercise.durationSeconds) // nächste Übung
+            playSound(context,R.raw.start)
+            startTimer(exercise.durationSeconds,context) // nächste Übung
         } else {
             _currentExercise.value = null // fertig!
             _state.value = null
@@ -83,13 +92,16 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
     }
 
     // habe hier einfach meien Dataclass Exercise genommen, weiß nicht ob da sso best practice ist, aber hat funktioniert
-    private fun startReset() {
+    private fun startReset(context: Context) {
         _state.value = Workstate.REST
-        _currentExercise.value =
-            Exercise("Kurz Pause ", "Trink ruhig was, gleich geht es weiter ", R.drawable.pause, 15)
-        startTimer(15)
+        _currentExercise.value = Exercise("Kurz Pause ", "Trink ruhig was, gleich geht es weiter ", R.drawable.pause, 15)
+        playSound(context,R.raw.paus)
+        startTimer(15,context)
+
 
     }
+
+
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(currentIndex)
@@ -109,8 +121,8 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
         }
     }
 
-    private fun startTimer(duration: Int) {
-        println("⏳ Timer wird gestartet mit $duration Sekunden")  // <--- Testausgabe
+    private fun startTimer(duration: Int, context: Context) {
+
 
         _timeLeft.value = duration
 
@@ -118,19 +130,19 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
         timer = object : CountDownTimer(duration * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 _timeLeft.value = (millisUntilFinished / 1000).toInt()
-                println("⌛ Tick: ${_timeLeft.value}")  // <--- Testausgabe
+
             }
 
             override fun onFinish() {
-                println("✅ Timer fertig")  // <--- Testausgabe
+
                 if (_state.value == Workstate.EXERCISE) {
-                    startReset()
+                    startReset(context)
                 } else {
                     currentIndex++
-                    startExercise()
+                    startExercise(context)
                 }
             }
-        }.start() // ⬅️ WICHTIG: Timer starten!!!
+        }.start()
     }
 }
 
