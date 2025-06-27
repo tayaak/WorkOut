@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
+
 
 
 
@@ -28,9 +28,9 @@ fun WorkoutScreen(workoutViewModel: WorkoutViewModel = viewModel()) {
     val timeLeft by workoutViewModel.timeLeft.observeAsState(0) //wie viel zeit
     val progress by workoutViewModel.progress.observeAsState(0)//wie viel Fortschritt
      val totalExercises = 7 // Anzahl der Übungen, am besten aus ViewModel holen, hier vereinfacht
-
+// Für den Media Player
     val context = LocalContext.current
-
+// Wird am anfang ausgeführt, wenn die Composeble zum ersten mal angezeigt weerden, dadurch startet das Workout
     LaunchedEffect(Unit) {
         workoutViewModel.startExercise(context)
     }
@@ -67,6 +67,7 @@ fun WorkoutScreen(workoutViewModel: WorkoutViewModel = viewModel()) {
                     progress = progress / totalExercises.toFloat(),
                     modifier = Modifier.fillMaxWidth()
                 )
+                //Ist das Workout fertig, dann:
             } else {
                 Text(text = "Du hast es geschafft!🙌 Das heutige Work Out ist beendet 🥳", style = MaterialTheme.typography.headlineMedium)
             }
