@@ -11,7 +11,7 @@ import com.example.workout.model.Exercise
 import com.example.workout.R
 
 //hier wird der Zustand meines Workouts gespeichert
-class WorkoutViewModel() : ViewModel(), Parcelable {
+class WorkoutViewModel() : ViewModel() {
 
     //    mit der enum class, aknn ich definieren, welche Optionen es als Konstanten gibt.Also entweder Exercise oder Rest
     enum class Workstate {
@@ -52,10 +52,6 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
     // hier wird der timer abgespeichert
     private var timer: CountDownTimer? = null
 
-    // Um daten an das ViewModel weiter geben zu können,
-    constructor(parcel: Parcel) : this() {
-        currentIndex = parcel.readInt()
-    }
 
 
     // hier kommt die Musik
@@ -95,23 +91,6 @@ class WorkoutViewModel() : ViewModel(), Parcelable {
     }
 
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(currentIndex)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<WorkoutViewModel> {
-        override fun createFromParcel(parcel: Parcel): WorkoutViewModel {
-            return WorkoutViewModel(parcel)
-        }
-
-        override fun newArray(size: Int): Array<WorkoutViewModel?> {
-            return arrayOfNulls(size)
-        }
-    }
 
     // Hier wird der alte Timer gestoppt und der neue gesetzt
 
